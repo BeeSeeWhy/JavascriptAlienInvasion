@@ -7,7 +7,8 @@ var isGameOver = false,
     playerShip,
     score = 0,
     shot = [],
-    startBool = true;
+    startBool = true,
+    warp = false;
 
 // Start of game image declarations
 function startGame() {
@@ -195,21 +196,19 @@ function updateGameArea() {
   myBackground.speedX = -1;
   myBackground.newPos();
   myBackground.update();
-  // Move left
-  /*if(gameArea.key && gameArea.key == 37) {
-    playerShip.speedX = -2;
-    laser.speedX = -2;
-  }*/
+  // Anti-warp
+  if(gameArea.key && gameArea.key == 37) {
+    warp = false;
+  }
   // Move up
   if(gameArea.key && gameArea.key == 38) {
     playerShip.speedY = -2;
     laser.speedY = -2;
   }
-  // Move right
-  /*if(gameArea.key && gameArea.key == 39) {
-    playerShip.speedX = 2;
-    laser.speedX = 2;
-  }*/
+  // Warp
+  if(gameArea.key && gameArea.key == 39) {
+    warp = true;
+  }
   // Move down
   if(gameArea.key && gameArea.key == 40) {
     playerShip.speedY = 2;
@@ -327,7 +326,11 @@ function updateGameArea() {
       }
     }
     // Update monster position
-    monsters[i].speedX = -2;
+    if(warp) {
+      monsters[i].speedX = -4;
+    } else {
+      monsters[i].speedX = -2;
+    }
     monsters[i].newPos();
     monsters[i].update();
   }
