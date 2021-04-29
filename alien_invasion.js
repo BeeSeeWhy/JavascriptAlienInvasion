@@ -5,8 +5,9 @@ var isGameOver = false,
     myBackground,
     pause = true,
     playerShip,
-    score = 0;
-    shot = [];
+    score = 0,
+    shot = [],
+    startBool = true;
 
 // Start of game image declarations
 function startGame() {
@@ -76,8 +77,12 @@ function component(width, height, color, x, y, type) {
       if(type == "background") {
         ctx.drawImage(this.image, this.x + this.width, this.y, this.width, this.height);
       }
-    } else if(type == "text") { // If component labeled text
+    } else if(type == "text1") { // If component labeled text
       ctx.font = "16px Arial";
+      ctx.fillStyle = "white";
+      ctx.fillText(width + height, x, y);
+    } else if(type == "text2") { // If component labeled text
+      ctx.font = "32px Courier New";
       ctx.fillStyle = "white";
       ctx.fillText(width + height, x, y);
     } else {
@@ -137,35 +142,46 @@ function loadEnemy() {
 
 // Function to draw the score
 function drawScore() {
-  var theScore = new component("Score: ", score, "white", 8, 20, "text");
+  var theScore = new component("Score: ", score, "white", 8, 20, "text1");
   theScore.newPos();
   theScore.update();
 }
 
 // Function to draw lives left
 function drawLives() {
-  var theLives = new component("Lives: ", lives, "white", ctx.canvas.width-65, 20, "text");
+  var theLives = new component("Lives: ", lives, "white", ctx.canvas.width-65, 20, "text1");
   theLives.newPos();
   theLives.update();
 }
 
 function drawLifeLost() {
-  var lifeLost = new component("Life Lost: ", "Press C to continue", "white", ctx.canvas.width/2 - 40, ctx.canvas.height/2, "text");
+  var lifeLost = new component("Life Lost: ", "Press C to continue", "white", ctx.canvas.width/2 - 40, ctx.canvas.height/2, "text2");
   lifeLost.newPos();
   lifelost.update();
 }
 
 // Function to draw game over
 function drawGameOver() {
-  var gameOver = new component("Game Over", "!", "white", ctx.canvas.width/2 - 20, ctx.canvas.height/2, "text");
+  var gameOver = new component("Game Over", "!", "white", 200, 180, "text2");
   gameOver.newPos();
   gameOver.update();
+  var overInstrcts = new component("press s for ", "new game", "white", 210, 220, "text1");
+  overInstrcts.newPos();
+  overInstrcts.update();
 }
 
+function startScreen() {
+  var gameTitle = new component("ALIEN INVASION", "!", "white", 155, 180, "text2");
+  gameTitle.newPos();
+  gameTitle.update();
+  var gameInstructs = new component("press s", " to start", "white", 145, 220, "text2");
+  gameInstructs.newPos();
+  gameInstructs.update();
+}
 // Game loop
 function updateGameArea() {
-
   gameArea.clear();
+
   // Increment frameNo
   gameArea.frameNo += 1;
   // Load an enemy based on frameNo
@@ -176,28 +192,28 @@ function updateGameArea() {
   }
 
   //background speed
-  myBackground.speedX = -2;
+  myBackground.speedX = -1;
   myBackground.newPos();
   myBackground.update();
   // Move left
-  if(gameArea.key && gameArea.key == 37) {
-    playerShip.speedX = -1;
-    laser.speedX = -1;
-  }
+  /*if(gameArea.key && gameArea.key == 37) {
+    playerShip.speedX = -2;
+    laser.speedX = -2;
+  }*/
   // Move up
   if(gameArea.key && gameArea.key == 38) {
-    playerShip.speedY = -1;
-    laser.speedY = -1;
-  }
-  // Move down
-  if(gameArea.key && gameArea.key == 39) {
-    playerShip.speedX = 1;
-    laser.speedX = 1;
+    playerShip.speedY = -2;
+    laser.speedY = -2;
   }
   // Move right
+  /*if(gameArea.key && gameArea.key == 39) {
+    playerShip.speedX = 2;
+    laser.speedX = 2;
+  }*/
+  // Move down
   if(gameArea.key && gameArea.key == 40) {
-    playerShip.speedY = 1;
-    laser.speedY = 1;
+    playerShip.speedY = 2;
+    laser.speedY = 2;
   }
   // Lasers away!
   if(gameArea.key && gameArea.key == 32 || (gameArea.key == 32 && game.Area.key == 38)) {
@@ -205,12 +221,14 @@ function updateGameArea() {
   }
 
   // Begin game and unpause
-  if(gameArea.key && gameArea.key == 67) {
+  if(gameArea.key && gameArea.key == 83) {
     if(isGameOver) {
       isGameOver = false;
+      score = 0;
+      lives = 3;
       startGame();
     }
-
+    startBool = false;
     pause = false;
   }
 
@@ -220,6 +238,13 @@ function updateGameArea() {
     playerShip.speedY = 0;
     laser.speedX = 0;
     laser.speedY = 0;
+  }
+
+  if(startBool) {
+    startScreen();
+  }
+  if(isGameOver == true) {
+    drawGameOver();
   }
   // Draw score
   drawScore();
@@ -264,31 +289,45 @@ function updateGameArea() {
       // Lose a life for crashing into monster
       if(lives == 1) {
         lives -= 1;
-        lives.update();
+        drawLives();
         // Lives are zero, game over
+        monsters = [];
         isGameOver = true;
         drawGameOver();
       } else {
         // Decrement lives
         lives -= 1;
+        monsters[i] = new component(monsters[i].width, monsters[i].height, "images/explode.png", monsters[i].x, monsters[i].y, "image");
+        monsters[i].update();
         // Remove monster since you ran it over
+        if(monsters.length == 1) {
+          monsters = [];
+        } else {
         monsters.splice(i, 1);
+        }
       }
     }
     // remove monster if ran off the board
     if(monsters[i].x == 0) {
+      if(monsters.length == 1) {
+        monsters = [];
+      } else {
       monsters.splice(i, 1);
+      }
       if(lives == 1) {
         lives -= 1;
-        lives.update();
+        drawLives();
+        // Lives are zero, game over
+        monsters = [];
         isGameOver = true;
         drawGameOver();
       } else {
+        // Decrement lives
         lives -= 1;
       }
     }
     // Update monster position
-    monsters[i].speedX = -1;
+    monsters[i].speedX = -2;
     monsters[i].newPos();
     monsters[i].update();
   }
