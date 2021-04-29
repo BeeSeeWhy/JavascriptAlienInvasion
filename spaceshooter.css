@@ -1,0 +1,15 @@
+/*canvas {
+  background-image: url('images/space1.jpg');
+  width: 400px;
+  height: 400px;
+}*/
+
+canvas {
+  align-content: center;
+  border:1px solid #d3d3d3;
+  background-color: #f1f1f1;
+}
+
+div {
+  align-content: center;
+}
