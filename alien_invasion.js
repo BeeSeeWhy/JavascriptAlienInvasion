@@ -1,7 +1,9 @@
 // Variables
-var isGameOver = false,
+var backgroundMusic,
+    isGameOver = false,
     lives = 3,
     monsters = [],
+    mute = false,
     myBackground,
     pause = true,
     playerShip,
@@ -19,6 +21,18 @@ function startGame() {
   // background
   myBackground = new component(600, 400, "images/space3.jpg", 0, 0, "background");
   // fire up the game
+  backgroundMusic = new Audio("sounds/alieninvasion.mp3");
+  backgroundMusic.play();
+  myAudio = new Audio('sounds/rocket.mp3');
+  if (typeof myAudio.loop == 'boolean') {
+    myAudio.loop = true;
+  } else {
+    myAudio.addEventListener('ended', function() {
+        this.currentTime = 0;
+        this.play();
+    }, false);
+  }
+  myAudio.play();
   gameArea.start();
 }
 
@@ -136,6 +150,8 @@ function loadEnemy() {
   x = gameArea.canvas.width;
   y = Math.floor(Math.random() * (gameArea.canvas.height - 30));
   monsters.push(new component(60, 50, "images/monster.png", x, y, "image"));
+  let laserSFX = new Audio('sounds/monster.m4a');
+  laserSFX.play();
   for(i = 0; i < monsters.length; i++) {
     monsters[i].speedX += -1;
   }
@@ -225,7 +241,6 @@ function updateGameArea() {
       isGameOver = false;
       score = 0;
       lives = 3;
-      startGame();
     }
     startBool = false;
     pause = false;
@@ -268,8 +283,8 @@ function updateGameArea() {
       if(shot[j].crashWith(monsters[h])) {
         // Update score
         score += 5;
-        // The monster roars when shot!
-        let monsterSFX = new Audio('sounds/monster.m4a');
+        // The monster explodes when shot!
+        let monsterSFX = new Audio('sounds/explode.mp3');
         monsterSFX.play();
         // Remove the shot laser
         shot.splice(j, 1);
@@ -286,16 +301,21 @@ function updateGameArea() {
   for(i = 0; i < monsters.length; i++) {
     if(playerShip.crashWith(monsters[i])) {
       // Lose a life for crashing into monster
+      let monsterSFX = new Audio('sounds/smash.mp3');
+      monsterSFX.play();
       if(lives == 1) {
         lives -= 1;
         drawLives();
         // Lives are zero, game over
         monsters = [];
+        // Outro music
+        backgroundMusic.play();
         isGameOver = true;
         drawGameOver();
       } else {
         // Decrement lives
         lives -= 1;
+        // Explode monster
         monsters[i] = new component(monsters[i].width, monsters[i].height, "images/explode.png", monsters[i].x, monsters[i].y, "image");
         monsters[i].update();
         // Remove monster since you ran it over
@@ -309,16 +329,24 @@ function updateGameArea() {
     // remove monster if ran off the board
     if(monsters[i].x == 0) {
       if(monsters.length == 1) {
+        // if there's only 1 monster, just empty the array
         monsters = [];
       } else {
-      monsters.splice(i, 1);
+        // otherwise we remove that element and splice the array together
+        monsters.splice(i, 1);
       }
+        // Lives are zero, game over
       if(lives == 1) {
         lives -= 1;
+        // Update lives
         drawLives();
-        // Lives are zero, game over
+        // Remove monsters on board
         monsters = [];
+        // Outro music
+        backgroundMusic.play();
+        // Update isGameOver boolean
         isGameOver = true;
+        // Draw the game over on the canvas
         drawGameOver();
       } else {
         // Decrement lives
