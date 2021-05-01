@@ -3,13 +3,39 @@
   width: 400px;
   height: 400px;
 }*/
-
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap');
 canvas {
-  align-content: center;
+  /*margin: auto;*/
   border:1px solid #d3d3d3;
   background-color: #f1f1f1;
 }
 
+/*#canvas-container {
+  margin: 100px, auto, auto;
+}*/
+
+#headline {
+  color: "white";
+}
+body {
+  background-color: #000;
+  background-image: url('images/space.jpg');
+  color: #fff;
+  overflow: hidden;
+  font-family: 'Orbitron', sans-serif;
+}
+
 div {
-  align-content: center;
+  margin: auto;
+}
+
+#bodyContainer {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 250px auto 250px;
+}
+
+#container {
+  width:auto;
+  overflow: hidden;
 }

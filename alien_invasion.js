@@ -14,15 +14,56 @@ var backgroundMusic,
 
 // Start of game image declarations
 function startGame() {
+  var divContainer = document.createElement("div");
+  divContainer.id = "container";
+  divContainer.className = "container-class";
+  document.body.appendChild(divContainer);
+  var divTitle = document.createElement("div");
+  divTitle.id = "title";
+  divTitle.className = "title-class";
+  var centerTitle = document.createElement("center");
+  centerTitle.id = "center-title";
+  divTitle.appendChild(centerTitle);
+  var headline = document.createElement("h1");
+  headline.id = "headline";
+  centerTitle.appendChild(headline);
+  headline.innerHTML = "Alien Invasion!";
+  document.getElementById("container").appendChild(divTitle);
+  var bodyContainer = document.createElement("div");
+  bodyContainer.id = "bodyContainer";
+  document.getElementById("container").appendChild(bodyContainer);
+  var divBodyContainer1 = document.createElement("div");
+  divBodyContainer1.id = "bodyContainer1";
+  document.getElementById("bodyContainer").appendChild(divBodyContainer1);
+  var bodyImage1 = document.createElement("img");
+  bodyImage1.id = "playerMarker";
+  bodyImage1.src = "images/player.png";
+  document.getElementById("bodyContainer1").appendChild(bodyImage1);
+  var divCanvasContainer = document.createElement("div");
+  divCanvasContainer.id = "canvas-container";
+  divCanvasContainer.className = "canvas-container-class";
+  document.getElementById("bodyContainer").appendChild(divCanvasContainer);
+  var divBodyContainer2 = document.createElement("div");
+  divBodyContainer2.id = "bodyContainer2";
+  document.getElementById("bodyContainer").appendChild(divBodyContainer2);
+  var bodyImage2 = document.createElement("img");
+  bodyImage2.id = "alien";
+  bodyImage2.src = "images/monster.png";
+  document.getElementById("bodyContainer2").appendChild(bodyImage2);
+  var instructsContainer = document.createElement("div");
+  instructsContainer.id = "instructions-container";
+  document.getElementById("container").appendChild(instructsContainer);
+
   // Player ship
   playerShip = new component(40, 40, 'images/spacecraft_white.png', 10, 180, "image");
   // Player laser
   laser = new component(15, 5, 'rgba(64, 255, 0, .7)', 50, 197, "pewpew");
   // background
   myBackground = new component(600, 400, "images/space3.jpg", 0, 0, "background");
-  // fire up the game
+  // Intro Music
   backgroundMusic = new Audio("sounds/alieninvasion.mp3");
   backgroundMusic.play();
+  // Rocket sound looped
   myAudio = new Audio('sounds/rocket.mp3');
   if (typeof myAudio.loop == 'boolean') {
     myAudio.loop = true;
@@ -32,7 +73,9 @@ function startGame() {
         this.play();
     }, false);
   }
+  // Play rocket sound
   myAudio.play();
+  // Fire up the game
   gameArea.start();
 }
 
@@ -41,10 +84,14 @@ var gameArea = {
   // Dynamically create canvas
   canvas : document.createElement("canvas"),
   start : function() {
+    //this.canvas.style.position = "relative";
+    //this.canvas.style.left = "30%";
+    // Canvas dimensions
     this.canvas.width = 600;
     this.canvas.height = 400;
+    // Canvas context
     this.context = this.canvas.getContext("2d");
-    document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+    document.getElementById("canvas-container").appendChild(this.canvas);
     // frame tally
     this.frameNo = 0;
     this.interval = setInterval(updateGameArea, 20);
@@ -92,17 +139,21 @@ function component(width, height, color, x, y, type) {
       if(type == "background") {
         ctx.drawImage(this.image, this.x + this.width, this.y, this.width, this.height);
       }
-    } else if(type == "text1") { // If component labeled text
-      ctx.font = "16px Arial";
+    } else if(type == "text1") { // If component labeled text1
+      ctx.font = "16px Orbitron";
       ctx.fillStyle = "white";
       ctx.fillText(width + height, x, y);
-    } else if(type == "text2") { // If component labeled text
-      ctx.font = "32px Courier New";
+    } else if(type == "text2") { // If component labeled text2
+      ctx.font = "32px Orbitron";
       ctx.fillStyle = "white";
       ctx.fillText(width + height, x, y);
-    } else {
+    } else if(type == "pewpew") { // to draw laser
       ctx.fillStyle = color;
       ctx.fillRect(this.x, this.y, this.width, this.height);
+    } else if(type == "border") { //draw box around titles
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 10;
+      ctx.strokeRect = (this.x, this.y, this.width, this.height);
     }
   }
   // Update component
@@ -118,15 +169,19 @@ function component(width, height, color, x, y, type) {
   }
   // crashWith function to detect collision with another object
   this.crashWith = function(otherobj) {
+    // this object stats
     var myleft = this.x;
     var myright = this.x + (this.width);
     var mytop = this.y;
     var mybottom = this.y + (this.height);
+    // other object stats
     var otherleft = otherobj.x;
     var otherright = otherobj.x + (otherobj.width);
     var othertop = otherobj.y;
     var otherbottom = otherobj.y + (otherobj.height);
+    // Set boolean to crash is true
     var crash = true;
+    // Check is missed, then set crash to false
     if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft || myleft > otherright)) {
       crash = false;
     }
@@ -136,9 +191,12 @@ function component(width, height, color, x, y, type) {
 
 // Function to shoot laser
 function shootLaser(x,y) {
-	shot.push(new component(15, 5, "rgba(64, 255, 0, .7)", laser.x, laser.y));
+  // Draw the shot
+	shot.push(new component(15, 5, "rgba(64, 255, 0, .7)", laser.x, laser.y, "pewpew"));
+  // Laser sfx
   let laserSFX = new Audio('sounds/audio_laser-sfx.m4a');
   laserSFX.play();
+  // Making the laser shoot
   for(i = 0; i < shot.length; i++) {
   	shot[i].speedX +=1;
    }
@@ -147,11 +205,16 @@ function shootLaser(x,y) {
 // Function to load the enemy
 function loadEnemy() {
   var x, y;
+  // Load beginning at right of canvas
   x = gameArea.canvas.width;
+  // Randomly select the y axis number
   y = Math.floor(Math.random() * (gameArea.canvas.height - 30));
+  // Put the enemy in the array
   monsters.push(new component(60, 50, "images/monster.png", x, y, "image"));
-  let laserSFX = new Audio('sounds/monster.m4a');
-  laserSFX.play();
+  // The enemy announces their presence with scary sound
+  let monsterSFX = new Audio('sounds/monster.m4a');
+  monsterSFX.play();
+  // The enemy advances towards the player
   for(i = 0; i < monsters.length; i++) {
     monsters[i].speedX += -1;
   }
@@ -166,7 +229,7 @@ function drawScore() {
 
 // Function to draw lives left
 function drawLives() {
-  var theLives = new component("Lives: ", lives, "white", ctx.canvas.width-65, 20, "text1");
+  var theLives = new component("Lives: ", lives, "white", ctx.canvas.width-80, 20, "text1");
   theLives.newPos();
   theLives.update();
 }
@@ -182,18 +245,25 @@ function drawGameOver() {
   var gameOver = new component("Game Over", "!", "white", 200, 180, "text2");
   gameOver.newPos();
   gameOver.update();
-  var overInstrcts = new component("press s for ", "new game", "white", 210, 220, "text1");
+  var overInstrcts = new component("press s for ", "new game", "#FFFFFF", 210, 220, "text1");
   overInstrcts.newPos();
   overInstrcts.update();
 }
 
 function startScreen() {
-  var gameTitle = new component("ALIEN INVASION", "!", "white", 155, 180, "text2");
+  /*var gameRect = new component(360, 145, "rgba(255,255,255,.09)", 120, 120, "pewpew");
+  gameRect.newPos();
+  gameRect.update();
+  var gameBorder = new component(360, 145, "white", 120, 120, "border");
+  gameBorder.newPos();
+  gameBorder.update();*/
+  var gameTitle = new component("Alien Invasion", "!", "white", 155, 180, "text2");
   gameTitle.newPos();
   gameTitle.update();
-  var gameInstructs = new component("press s", " to start", "white", 145, 220, "text2");
+  var gameInstructs = new component("press s", " to start", "white", 210, 220, "text1");
   gameInstructs.newPos();
   gameInstructs.update();
+
 }
 // Game loop
 function updateGameArea() {
@@ -208,8 +278,12 @@ function updateGameArea() {
     }
   }
 
-  //background speed
-  myBackground.speedX = -1;
+  //background speed and update
+  if(warp) {
+    myBackground.speedX = -2;
+  } else {
+    myBackground.speedX = -1;
+  }
   myBackground.newPos();
   myBackground.update();
   // Anti-warp
@@ -239,6 +313,7 @@ function updateGameArea() {
   if(gameArea.key && gameArea.key == 83) {
     if(isGameOver) {
       isGameOver = false;
+      warp = false;
       score = 0;
       lives = 3;
     }
@@ -253,10 +328,11 @@ function updateGameArea() {
     laser.speedX = 0;
     laser.speedY = 0;
   }
-
+  // Check if we should display start screen
   if(startBool) {
     startScreen();
   }
+  // Check if should display game over screen
   if(isGameOver == true) {
     drawGameOver();
   }
@@ -283,12 +359,12 @@ function updateGameArea() {
       if(shot[j].crashWith(monsters[h])) {
         // Update score
         score += 5;
-        // The monster explodes when shot!
+        // The monster audibly explodes when shot!
         let monsterSFX = new Audio('sounds/explode.mp3');
         monsterSFX.play();
         // Remove the shot laser
         shot.splice(j, 1);
-        // Pulverize monster
+        // The monster visually explodes when shot!
         monsters[h] = new component(monsters[h].width, monsters[h].height, "images/explode.png", monsters[h].x, monsters[h].y, "image");
         monsters[h].update();
         // remove monster
