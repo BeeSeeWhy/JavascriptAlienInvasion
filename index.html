@@ -4,9 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="alien_invasion.css">
+  <link  rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
   <title>Alien Invasion</title>
 </head>
 <body onload="startGame()">
+  <div id="container" class="container-class">
+    <div id="title" class="title-class">
+      <h1 id="headline">Alien Invasion!</h1>
+    </div>
+    <div id="bodyContainer">
+      <div id="bodyContainer1">
+        <img id="playMarker" src="images/player.png">
+      </div>
+      <div id="canvas-container" class="canvas-container-class">
+
+      </div>
+      <div id="bodyContainer2">
+        <img id="alien" src="images/monsterBig.png">
+      </div>
+    </div>
+    <div id="instructsTitle">Controllers</div>
+    <div id="instructsBody">
+      <div id = "upIcon"><span class="material-icons">arrow_drop_up</span></div>
+      <div id = "upInstructs">Moves Ship Up</div>
+      <div id = "downIcon"><span class="material-icons">arrow_drop_down</span></div>
+      <div id = "downInstructs">Moves Ship Down</div>
+      <div id = "rightIcon"><span class="material-icons">arrow_right</span></div>
+      <div id = "rightInstructs">Engages Warp Speed</div>
+      <div id = "leftIcon"><span class="material-icons">arrow_left</span></div>
+      <div id = "leftInstructs">Disengages Warp Speed</div>
+      <div id = "spacebarIcon"><span class="material-icons">space_bar</span></div>
+      <div id = "spacebarInstructs">Shoots Laser</div>
+    </div>
+
+  </div>
   <script trype="text/javascript" src="alien_invasion.js"></script>
 </body>
 </html>

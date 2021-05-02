@@ -14,46 +14,6 @@ var backgroundMusic,
 
 // Start of game image declarations
 function startGame() {
-  var divContainer = document.createElement("div");
-  divContainer.id = "container";
-  divContainer.className = "container-class";
-  document.body.appendChild(divContainer);
-  var divTitle = document.createElement("div");
-  divTitle.id = "title";
-  divTitle.className = "title-class";
-  var centerTitle = document.createElement("center");
-  centerTitle.id = "center-title";
-  divTitle.appendChild(centerTitle);
-  var headline = document.createElement("h1");
-  headline.id = "headline";
-  centerTitle.appendChild(headline);
-  headline.innerHTML = "Alien Invasion!";
-  document.getElementById("container").appendChild(divTitle);
-  var bodyContainer = document.createElement("div");
-  bodyContainer.id = "bodyContainer";
-  document.getElementById("container").appendChild(bodyContainer);
-  var divBodyContainer1 = document.createElement("div");
-  divBodyContainer1.id = "bodyContainer1";
-  document.getElementById("bodyContainer").appendChild(divBodyContainer1);
-  var bodyImage1 = document.createElement("img");
-  bodyImage1.id = "playerMarker";
-  bodyImage1.src = "images/player.png";
-  document.getElementById("bodyContainer1").appendChild(bodyImage1);
-  var divCanvasContainer = document.createElement("div");
-  divCanvasContainer.id = "canvas-container";
-  divCanvasContainer.className = "canvas-container-class";
-  document.getElementById("bodyContainer").appendChild(divCanvasContainer);
-  var divBodyContainer2 = document.createElement("div");
-  divBodyContainer2.id = "bodyContainer2";
-  document.getElementById("bodyContainer").appendChild(divBodyContainer2);
-  var bodyImage2 = document.createElement("img");
-  bodyImage2.id = "alien";
-  bodyImage2.src = "images/monster.png";
-  document.getElementById("bodyContainer2").appendChild(bodyImage2);
-  var instructsContainer = document.createElement("div");
-  instructsContainer.id = "instructions-container";
-  document.getElementById("container").appendChild(instructsContainer);
-
   // Player ship
   playerShip = new component(40, 40, 'images/spacecraft_white.png', 10, 180, "image");
   // Player laser

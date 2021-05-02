@@ -1,18 +1,11 @@
-/*canvas {
-  background-image: url('images/space1.jpg');
-  width: 400px;
-  height: 400px;
-}*/
+
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 canvas {
-  /*margin: auto;*/
-  border:1px solid #d3d3d3;
+  /* margin: auto; */
+  border:2px solid #ffffff;
   background-color: #f1f1f1;
 }
-
-/*#canvas-container {
-  margin: 100px, auto, auto;
-}*/
 
 #headline {
   color: "white";
@@ -20,22 +13,69 @@ canvas {
 body {
   background-color: #000;
   background-image: url('images/space.jpg');
+  background-size: auto;
+  background-repeat: no-repeat;
   color: #fff;
   overflow: hidden;
   font-family: 'Orbitron', sans-serif;
 }
 
-div {
+/*div {
   margin: auto;
-}
+}*/
 
 #bodyContainer {
-  display: grid;
+  display: flex;
   width: 100%;
-  grid-template-columns: 250px auto 250px;
+  grid-template-columns: auto auto auto;
+  justify-content: space-around;
+}
+
+#playerMarker {
+  margin: 0px;
 }
 
 #container {
   width:auto;
   overflow: hidden;
+}
+
+#title {
+  text-align: center;
+}
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+#alien {
+  margin: 100px, 10px, 10px, 10px;
+}
+
+#instructsTitle {
+  text-align: center;
+}
+
+#instructsBody {
+  display: grid;
+  width: 100%;
+  grid-template-columns: auto auto;
+}
+
+#upIcon,
+#downIcon,
+#rightIcon,
+#leftIcon,
+#spacebarIcon {
+  text-align: right;
+  float: right;
+}
+
+#upInstructs,
+#downInstucts,
+#rightInstructs,
+#leftInstructs,
+#spacebarInstructs {
+  text-align: left;
 }
