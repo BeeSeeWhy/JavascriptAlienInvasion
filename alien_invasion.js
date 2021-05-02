@@ -44,8 +44,6 @@ var gameArea = {
   // Dynamically create canvas
   canvas : document.createElement("canvas"),
   start : function() {
-    //this.canvas.style.position = "relative";
-    //this.canvas.style.left = "30%";
     // Canvas dimensions
     this.canvas.width = 600;
     this.canvas.height = 400;
@@ -211,16 +209,10 @@ function drawGameOver() {
 }
 
 function startScreen() {
-  /*var gameRect = new component(360, 145, "rgba(255,255,255,.09)", 120, 120, "pewpew");
-  gameRect.newPos();
-  gameRect.update();
-  var gameBorder = new component(360, 145, "white", 120, 120, "border");
-  gameBorder.newPos();
-  gameBorder.update();*/
-  var gameTitle = new component("Alien Invasion", "!", "white", 155, 180, "text2");
+  var gameTitle = new component("Alien Invasion", "!", "white", 175, 180, "text2");
   gameTitle.newPos();
   gameTitle.update();
-  var gameInstructs = new component("press s", " to start", "white", 210, 220, "text1");
+  var gameInstructs = new component("press s", " to start", "white", 230, 220, "text1");
   gameInstructs.newPos();
   gameInstructs.update();
 
