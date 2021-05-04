@@ -1,8 +1,10 @@
 // Variables
-var backgroundMusic,
+var aliens = [],
+    backgroundMusic,
     isGameOver = false,
+    level = 1,
+    drawLevelUp = false,
     lives = 3,
-    monsters = [],
     mute = false,
     myBackground,
     pause = true,
@@ -20,9 +22,17 @@ function startGame() {
   laser = new component(15, 5, 'rgba(64, 255, 0, .7)', 50, 197, "pewpew");
   // background
   myBackground = new component(600, 400, "images/space3.jpg", 0, 0, "background");
-  // Intro Music
+  rocketNoise();
+  // Fire up the game
+  gameArea.start();
+}
+
+function playBackgroundMusic() {
   backgroundMusic = new Audio("sounds/alieninvasion.mp3");
   backgroundMusic.play();
+}
+
+function rocketNoise() {
   // Rocket sound looped
   myAudio = new Audio('sounds/rocket.mp3');
   if (typeof myAudio.loop == 'boolean') {
@@ -35,10 +45,7 @@ function startGame() {
   }
   // Play rocket sound
   myAudio.play();
-  // Fire up the game
-  gameArea.start();
 }
-
 // Game area
 var gameArea = {
   // Dynamically create canvas
@@ -108,10 +115,6 @@ function component(width, height, color, x, y, type) {
     } else if(type == "pewpew") { // to draw laser
       ctx.fillStyle = color;
       ctx.fillRect(this.x, this.y, this.width, this.height);
-    } else if(type == "border") { //draw box around titles
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 10;
-      ctx.strokeRect = (this.x, this.y, this.width, this.height);
     }
   }
   // Update component
@@ -160,24 +163,68 @@ function shootLaser(x,y) {
    }
 }
 
-// Function to load the enemy
-function loadEnemy() {
+// Function to load alien
+function loadAlien() {
   var x, y;
   // Load beginning at right of canvas
   x = gameArea.canvas.width;
   // Randomly select the y axis number
-  y = Math.floor(Math.random() * (gameArea.canvas.height - 30));
+  y = randomY();
   // Put the enemy in the array
-  monsters.push(new component(60, 50, "images/monster.png", x, y, "image"));
-  // The enemy announces their presence with scary sound
-  let monsterSFX = new Audio('sounds/monster.m4a');
-  monsterSFX.play();
+  aliens.push(new component(60, 50, "images/monster.png", x, y, "image"));
+  // make the monster noise
+  if(score < 50) { // level one
+    alienNoise();
+  } else if(score > 50 && score < 100) {
+    // Make the monster noise
+    alienNoise();
+    // Get another random y-axis
+    y = randomY();
+    // Put another enemy in the array
+    aliens.push(new component(60, 50, "images/monster.png", x, y, "image"));
+    // Monster makes some noise
+    alienNoise();
+  } else {
+    // Randomly select the y axis number
+    y = randomY();
+    // Put the enemy in the array
+    aliens.push(new component(60, 50, "images/monster.png", x, y, "image"));
+    // make the monster noise
+    // Put the enemy in the array
+    aliens.push(new component(60, 50, "images/monster.png", x, y, "image"));
+    // Make the monster noise
+    alienNoise();
+    // Get another random y-axis
+    b = randomY();
+    // Put another enemy in the array
+    aliens.push(new component(60, 50, "images/monster.png", x, b, "image"));
+    // Monster makes some noise
+    alienNoise();
+    // Get another random y-axis
+    c = randomY();
+    // Put another enemy in the array
+    monsters.push(new component(60, 50, "images/monster.png", x, c, "image"));
+    // Monster makes some noise
+    alienNoise();
+  }
+
   // The enemy advances towards the player
   for(i = 0; i < monsters.length; i++) {
     monsters[i].speedX += -1;
   }
 }
 
+// Helper function for random y-axis to load alien
+function randomY() {
+  // Randomly select the y axis number
+  return Math.floor(Math.random() * (gameArea.canvas.height - 30));
+}
+
+function alienNoise() {
+  // The alien announces their presence with scary sound
+  let alienSFX = new Audio('sounds/monster.m4a');
+  alienSFX.play();
+}
 // Function to draw the score
 function drawScore() {
   var theScore = new component("Score: ", score, "white", 8, 20, "text1");
@@ -192,6 +239,7 @@ function drawLives() {
   theLives.update();
 }
 
+// Function to draw life lost screen
 function drawLifeLost() {
   var lifeLost = new component("Life Lost: ", "Press C to continue", "white", ctx.canvas.width/2 - 40, ctx.canvas.height/2, "text2");
   lifeLost.newPos();
@@ -208,6 +256,7 @@ function drawGameOver() {
   overInstrcts.update();
 }
 
+// Function to draw start screen
 function startScreen() {
   var gameTitle = new component("Alien Invasion", "!", "white", 175, 180, "text2");
   gameTitle.newPos();
@@ -215,24 +264,38 @@ function startScreen() {
   var gameInstructs = new component("press s", " to start", "white", 230, 220, "text1");
   gameInstructs.newPos();
   gameInstructs.update();
-
 }
+
+// Function to draw level up screen
+function levelUp() {
+  if(score >= 30 && score < 100) {
+    level = 2;
+  } else if(score >= 100) {
+    level = 3;
+  }
+  var gameLevel = new component("Welcome to Level ", level, "white", 125, 180, "text2");
+  gameLevel.newPos();
+  gameLevel.update();
+  var gameInstructs = new component("press s", " to start", "white", 230, 220, "text1");
+  gameInstructs.newPos();
+  gameInstructs.update();
+}
+
 // Game loop
 function updateGameArea() {
   gameArea.clear();
-
   // Increment frameNo
   gameArea.frameNo += 1;
   // Load an enemy based on frameNo
   if(!isGameOver && !pause) {
     if(gameArea.frameNo == 1 || everyinterval(150)) {
-      loadEnemy();
+      loadAlien();
     }
   }
 
   //background speed and update
   if(warp) {
-    myBackground.speedX = -2;
+    myBackground.speedX = -1;
   } else {
     myBackground.speedX = -1;
   }
@@ -268,9 +331,13 @@ function updateGameArea() {
       warp = false;
       score = 0;
       lives = 3;
+      playBackgroundMusic();
+    } else if(drawLevelUp) {
+      drawLevelUp = false;
     }
     startBool = false;
     pause = false;
+    playBackgroundMusic();
   }
 
   // If no input, clear everything
@@ -287,6 +354,9 @@ function updateGameArea() {
   // Check if should display game over screen
   if(isGameOver == true) {
     drawGameOver();
+  }
+  if(drawLevelUp) {
+    levelUp();
   }
   // Draw score
   drawScore();
@@ -306,70 +376,83 @@ function updateGameArea() {
       shot[j].update();
     }
     // Check if we shot a bad guy
-    for(h = 0; h < monsters.length; h++) {
+    for(h = 0; h < aliens.length; h++) {
       // Do this if we shot one
-      if(shot[j].crashWith(monsters[h])) {
+      if(shot[j].crashWith(aliens[h])) {
         // Update score
         score += 5;
-        // The monster audibly explodes when shot!
-        let monsterSFX = new Audio('sounds/explode.mp3');
-        monsterSFX.play();
+        // The alien audibly explodes when shot!
+        let explodeSFX = new Audio('sounds/explode.mp3');
+        explodeSFX.play();
         // Remove the shot laser
         shot.splice(j, 1);
-        // The monster visually explodes when shot!
-        monsters[h] = new component(monsters[h].width, monsters[h].height, "images/explode.png", monsters[h].x, monsters[h].y, "image");
-        monsters[h].update();
-        // remove monster
-        monsters.splice(h, 1)
+        // The alien visually explodes when shot!
+        aliens[h] = new component(aliens[h].width, aliens[h].height, "images/explode.png", aliens[h].x, aliens[h].y, "image");
+        aliens[h].update();
+        // remove alien
+        aliens.splice(h, 1);
+        if(score == 30) {
+          pause = true;
+          drawLevelUp = true;
+          aliens = [];
+          playBackgroundMusic();
+          levelUp();
+        } else if(score == 150) {
+          pause = true;
+          drawLevelUp = true;
+          aliens=[];
+          playBackgroundMusic();
+          levelUp();
+        }
         break;
       }
     }
   }
-  // Loop to check if monster crash with ship
-  for(i = 0; i < monsters.length; i++) {
-    if(playerShip.crashWith(monsters[i])) {
-      // Lose a life for crashing into monster
-      let monsterSFX = new Audio('sounds/smash.mp3');
-      monsterSFX.play();
+  // Loop to check if alien crash with ship
+  for(i = 0; i < aliens.length; i++) {
+    if(playerShip.crashWith(aliens[i])) {
+      // Lose a life for crashing into alien
+      let smashSFX = new Audio('sounds/smash.mp3');
+      smashSFX.play();
       if(lives == 1) {
         lives -= 1;
         drawLives();
         // Lives are zero, game over
-        monsters = [];
+        aliens = [];
         // Outro music
-        backgroundMusic.play();
+        playBackgroundMusic();
         isGameOver = true;
         drawGameOver();
       } else {
         // Decrement lives
         lives -= 1;
-        // Explode monster
-        monsters[i] = new component(monsters[i].width, monsters[i].height, "images/explode.png", monsters[i].x, monsters[i].y, "image");
+        // Explode aliens
+        aliens[i] = new component(aliens[i].width, aliens[i].height, "images/explode.png", aliens[i].x, aliens[i].y, "image");
         monsters[i].update();
-        // Remove monster since you ran it over
-        if(monsters.length == 1) {
-          monsters = [];
+        // Remove aliens since you ran it over
+        if(aliens.length == 1) {
+          aliens = [];
         } else {
-        monsters.splice(i, 1);
+        aliens.splice(i, 1);
         }
       }
     }
-    // remove monster if ran off the board
-    if(monsters[i].x == 0) {
-      if(monsters.length == 1) {
-        // if there's only 1 monster, just empty the array
-        monsters = [];
+    // remove aliens if ran off the board
+    if(aliens[i].x == 0) {
+      if(aliens.length == 1) {
+        // if there's only 1 aliens, just empty the array
+        aliens = [];
       } else {
         // otherwise we remove that element and splice the array together
-        monsters.splice(i, 1);
+        aliens.splice(i, 1);
       }
         // Lives are zero, game over
       if(lives == 1) {
         lives -= 1;
         // Update lives
         drawLives();
-        // Remove monsters on board
-        monsters = [];
+        // Remove aliens on board
+        aliens = [];
         // Outro music
         backgroundMusic.play();
         // Update isGameOver boolean
@@ -381,14 +464,15 @@ function updateGameArea() {
         lives -= 1;
       }
     }
-    // Update monster position
+
+    // Update alien position
     if(warp) {
-      monsters[i].speedX = -4;
+      aliens[i].speedX = -4;
     } else {
-      monsters[i].speedX = -2;
+      aliens[i].speedX = -2;
     }
-    monsters[i].newPos();
-    monsters[i].update();
+    aliens[i].newPos();
+    aliens[i].update();
   }
 }
 // Helper function for loading enemies on board
